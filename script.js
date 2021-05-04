@@ -41,6 +41,7 @@ function getCurrentWeather(cityName) {
             displayCurrentWeather(data, cityName);
             //get5DayForecast(cityName); 
             getUVindex(data.coord.lat, data.coord.lon)
+            console.log(data.coord.lat)
             return data.coord
         },
         error: function() {
@@ -69,13 +70,16 @@ function displayCurrentWeather(data, cityName) {
 
 
 function getUVindex(lat, lon) {
+    console.log(lat); 
     let uvAPI = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}`;
 
     $.ajax(uvAPI, {
         dataType:"json", 
         success: function(data) {
-            let index = parseFloat(data.value); 
+            console.log(data); 
+            let index = parseFloat(data.current.uvi); 
             displayUVIndex(index); 
+            console.log(data.value)
         },
         //error: function() {
             //alert("Error receiving the UV index")
@@ -95,7 +99,7 @@ function displayUVIndex(index) {
         indexClass = "bg-danger"; 
     }
 
-    currentWeatherContainerEl.append(`UV index: <span> class="${indexClass} p-2 text-white rounded>${index}</span>`); 
+    currentWeatherContainerEl.append(`UV index: <span class=${indexClass}>${index}</span>`); 
 }
 
 
