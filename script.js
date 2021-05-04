@@ -1,6 +1,5 @@
 let userFormEl = $("#user-form");
 let cityInputEl = $("#city-name");
-console.log(cityInputEl)
 let citiesListEl = $("#cities-container ul"); 
 let citySearchedEL = $("#city-searched"); 
 let currentWeatherContainerEl = $("#current-weather-container"); 
@@ -45,7 +44,7 @@ function getCurrentWeather(cityName) {
             return data.coord
         },
         error: function() {
-            //alert("We have a slight issue!");
+            alert("We have a slight issue!");
             forecastContainerEl.textContent = ""; 
         }
     })
@@ -60,6 +59,7 @@ function displayCurrentWeather(data, cityName) {
         cities.push(cityName);
         cities.sort();
         localStorage.setItem(`citiesSearched`, JSON.stringify(cities)); 
+        searchHistory(); 
     }
 
    
@@ -79,11 +79,10 @@ function getUVindex(lat, lon) {
             console.log(data); 
             let index = parseFloat(data.current.uvi); 
             displayUVIndex(index); 
-            console.log(data.value)
         },
-        //error: function() {
-            //alert("Error receiving the UV index")
-        //}
+        error: function() {
+            alert("Error receiving the UV index")
+        }
     })
     
 }
@@ -102,10 +101,19 @@ function displayUVIndex(index) {
     currentWeatherContainerEl.append(`UV index: <span class=${indexClass}>${index}</span>`); 
 }
 
+function searchHistory() {
+    citiesListEl.textContent = ""; 
+
+    cities.forEach(function(city) {
+        console.log(city)
+        citiesListEl.append(`<li class="list-group-item"> ${city} </li>`);
+    })
+}
+
 
 
 
 userFormEl.submit(formSubmitHandler); 
 citiesListEl.click(cityClickHandler); 
-
+searchHistory();
 
