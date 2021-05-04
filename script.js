@@ -1,34 +1,69 @@
-let userFormEl = $("#user-form");
-let cityInputEl = $("#city-name");
-let citiesListEl = $("#cities-container ul"); 
-let citySearchedEL = $("#city-searched"); 
-let currentWeatherContainerEl = $("#current-weather-container"); 
-let forecastContainerEl = $("#forecast-container"); 
-let cities = JSON.parse(localStorage.getItem("citiesSearched")) || []; 
+var userFormEl = $("#user-form");
+var cityInputEl = $("#city-name");
+var citiesListEl = $("#cities-container ul"); 
+var citySearchedEL = $("#city-searched"); 
+var currentWeatherContainerEl = $("#current-weather-container"); 
+var forecastContainerEl = $("#forecast-container"); 
+var cities = JSON.parse(localStorage.getItem("citiesSearched")) || []; 
 
 let citySearched; 
 
 
 const apiKey = "4994e9dae0cfd4d7106550fa9a769e96";
 
+/*
+function cityClickHandler(event) {
+    console.log(event)
+    let cityName = event.target.text; 
+    getCurrentWeather(cityName)
+}
+
+function titleCase(str) {
+    var splitStr = str.toLowerCase().split(" "); 
+
+    for(var i = 0; i < splitStr.length; i++) {
+        spitStr[i] = splitstr[i].charAt[0].toUpperCase() + splitStr[i].substring(1).toLowerCase()
+    }
+
+    return splitStr.join(" "); 
+}
+
+function formSubmitHandler(event) {
+    event.preventDefault(); 
+    console.log(event)
+    console.log(cityInputEl.text)
+
+    var city = titleCase(cityInputEl.text);
+
+    if(city) {
+        getCurrentWeather(city); 
+        cityInputEl.text = ""; 
+    } else {
+        alert("Please Enter a City")
+    }
+}
+
+*/
+
 
 
 function getCurrentWeather(cityName) {
-    let requestUrl = `api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`;
+    let requestUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`;
 
     console.log(requestUrl)
     
     $.ajax(requestUrl, {
         dataType: "json",
         success: function(data) {
-            displayWeather(data, cityName);
-            get5DayForecast(cityName); 
-            getUVindex(data.corrd.lat, data.coord.lon)
-            return data.coord
+            console.log(data);
+            displayCurrentWeather(data, cityName);
+            //get5DayForecast(cityName); 
+            //getUVindex(data.coord.lat, data.coord.lon)
+            //return data.coord
         },
         error: function() {
             alert("We have a slight issue!");
-            forecastContainerEl.innerHTML = ""; 
+            forecastContainerEl.html() = ""; 
         }
         
     })
@@ -36,32 +71,33 @@ function getCurrentWeather(cityName) {
 }
 
 function displayCurrentWeather(data, cityName) {
-    currentWeatherContainerEL.innerHTML = ""; 
-    citySearchedEl.textContent = cityName; 
+    currentWeatherContainerEl.innerHTML = ""; 
+    citySearchedEL.textContent = cityName; 
 
     if(!cities.includes(cityName)) {
         cities.push(cityName);
         cities.sort();
         localStorage.setItem(`citiesSearched`, JSON.stringify(cities)); 
-        searchHistory(); 
+        //searchHistory(); 
     }
 
-    let temperatureEL = $("<p>"); 
-    temperatureEL.text = `Temperature: ${data.main.temp} `;
-    currentWeatherContainerEl.appendChild(temperatureEl); 
+    let temperatureEL = $("p"); 
+    temperatureEL.textContent = `Temperature: ${data.main.temp}`;
+    currentWeatherContainerEl.append(temperatureEL); 
+    console.log(currentWeatherContainerEl)
 
-    let humidityEL = $("<p>"); 
-    temperatureEL.text = `Humidity: ${data.main.humidity} % `;
-    currentWeatheContainerEl.appendChild(humidityEL); 
+    let humidityEL = $("p"); 
+    humidityEL.textContent = `Humidity: ${data.main.humidity} %`;
+    currentWeatherContainerEl.append(humidityEL); 
 
-    let windSpeedEl = $("<p>"); 
-    temperatureEL.text = `Wind Speed: ${data.wind.speed} MPH`;
-    currentWeatherContainerEL.appendChild(windSpeedEl); 
+    let windSpeedEl = $("p"); 
+    windSpeedEl.textContent = `Wind Speed: ${data.wind.speed} MPH`;
+    currentWeatherContainerEl.append(windSpeedEl); 
 }
 
-
+/*
 function getUVindex(lat, lon) {
-    let uvAPI = `http://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}`;
+    let uvAPI = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}`;
 
     $.ajax(uvAPI, {
         dataType:"json", 
@@ -69,14 +105,14 @@ function getUVindex(lat, lon) {
             let index = parseFloat(data.value); 
             displayUVIndex(index); 
         },
-        error: function() {
-            alert("Error receiving the UV index")
-        }
+        //error: function() {
+            //alert("Error receiving the UV index")
+        //}
     })
     
 }
 
-function displayUV(index) {
+function displayUVIndex(index) {
     let indexClass; 
 
     if(index < 3) {
@@ -87,9 +123,9 @@ function displayUV(index) {
         indexClass = "bg-danger"; 
     }
 
-    let UVIndexEl = $("<p>"); 
-    UVIndexEl.innerHTML = `UV index: <span> class="${indexClass} p-2 text-white rounded>${index}</span>`;
-    currentWeatherContainerEl.appendChild(UVIndexEL); 
+    let UVIndexEl = $("p"); 
+    UVIndexEl.text = `UV index: <span> class="${indexClass} p-2 text-white rounded>${index}</span>`;
+    currentWeatherContainerEl.append(UVIndexEl); 
 }
 
 
@@ -97,19 +133,18 @@ function searchHistory() {
     citiesListEl.innerHTML = ""; 
 
     cities.forEach(function(city) {
-        let cityEl = $("<li>"); 
+        let cityEl = $("li"); 
         cityEl.setAttribute("class", "list-group-item"); 
         cityEl.textContent = city; 
-        citiesListEl.appendChild(cityEl); 
+        citiesListEl.append(cityEl); 
     })
 }
 
-
-
+*/
 
 
 userFormEl.submit(getCurrentWeather("Raleigh")); 
 //citiesListEl.click(cityClickHandler); 
-//clearBtn.click(clearSearchHistory); 
 
-searchHistory(); 
+
+//searchHistory(); 
