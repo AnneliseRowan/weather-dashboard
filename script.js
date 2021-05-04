@@ -1,5 +1,6 @@
 let userFormEl = $("#user-form");
 let cityInputEl = $("#city-name");
+console.log(cityInputEl)
 let citiesListEl = $("#cities-container ul"); 
 let citySearchedEL = $("#city-searched"); 
 let currentWeatherContainerEl = $("#current-weather-container"); 
@@ -14,17 +15,20 @@ const apiKey = "4994e9dae0cfd4d7106550fa9a769e96";
 
 function formSubmitHandler(event) {
     event.preventDefault(); 
-    console.log(event)
-    console.log(cityInputEl.text)
-
-    let city = cityInputEl.text;
-
+    console.log(cityInputEl)
+    let city = cityInputEl[0].value.trim();
+    
     if(city) {
         getCurrentWeather(city); 
-        cityInputEl.text = ""; 
+        cityInputEl.value = ""; 
     } else {
         alert("Please Enter a City")
     }
+}
+
+function cityClickHandler(event) {
+    let cityName = event.target.value(); 
+    getCurrentWeather(cityName); 
 }
 
 function getCurrentWeather(cityName) {
@@ -40,7 +44,7 @@ function getCurrentWeather(cityName) {
             return data.coord
         },
         error: function() {
-            alert("We have a slight issue!");
+            //alert("We have a slight issue!");
             forecastContainerEl.textContent = ""; 
         }
     })
@@ -55,7 +59,6 @@ function displayCurrentWeather(data, cityName) {
         cities.push(cityName);
         cities.sort();
         localStorage.setItem(`citiesSearched`, JSON.stringify(cities)); 
-        //searchHistory(); 
     }
 
    
@@ -99,6 +102,6 @@ function displayUVIndex(index) {
 
 
 userFormEl.submit(formSubmitHandler); 
-//citiesListEl.click(cityClickHandler("Raleigh")); 
+citiesListEl.click(cityClickHandler); 
 
 
