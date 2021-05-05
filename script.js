@@ -5,7 +5,7 @@ let citySearchedEL = $("#city-searched");
 let currentWeatherContainerEl = $("#current-weather-container"); 
 let forecastContainerEl = $("#forecast-container"); 
 let cities = JSON.parse(localStorage.getItem("citiesSearched")) || []; 
-let clearBtn = $("clear-btn");
+let clearBtn = $("#clear-btn");
 
 let citySearched; 
 
@@ -28,7 +28,7 @@ function formSubmitHandler(event) {
     
     if(city) {
         getCurrentWeather(city); 
-        cityInputEl.value = ""; 
+        cityInputEl.textContent = " "; 
     } else {
         alert("Please Enter a City")
     }
@@ -45,11 +45,9 @@ function getCurrentWeather(cityName) {
     $.ajax(requestUrl, {
         dataType: "json",
         success: function(data) {
-            console.log(data);
             displayCurrentWeather(data, cityName);
-            get5DayForecast(cityName); 
+            //get5DayForecast(cityName); 
             getUVindex(data.coord.lat, data.coord.lon)
-            console.log(data.coord.lat)
             return data.coord
         },
         error: function() {
@@ -69,7 +67,9 @@ function getCurrentWeather(cityName) {
 }
 
 function displayCurrentWeather(data, cityName) {
-    currentWeatherContainerEl.textContent = ""; 
+    currentWeatherContainerEl.text("");
+    citySearchedEL.text(""); 
+
     citySearchedEL.textContent = cityName; 
 
     if(!cities.includes(cityName)) {
@@ -86,12 +86,14 @@ function displayCurrentWeather(data, cityName) {
 
     dtCitySearched = moment.unix(data.dt + data.timezone).utc().format("M/DD/YY, h:mm a");
 
-    citySearchedEL.append(`${cityName} ${dtCitySearched} <span id="weather-icon><img src="http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png"/></span>`)
+    citySearchedEL.append(`${cityName} ${dtCitySearched} <span id="weather-icon"><img src="http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png"/></span>`)
     currentWeatherContainerEl.append(`<p> Temperature: ${data.main.temp}℉ </p>`)
     currentWeatherContainerEl.append(`<p> Humidity: ${data.main.humidity}% </p>`)
     currentWeatherContainerEl.append(`<p> Wind Speed: ${data.wind.speed} MPH </p>`)
-}
 
+
+}
+/*
 function get5DayForecast(cityName) {
 
     var apiURL = `api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}`;
@@ -120,11 +122,26 @@ function display5DayForecast(data) {
     if(todayStartHour > todayAt6Am) {
         firstForecast = moment(dtCitySearched, "M/DD/YY, h:mm a").add(1, "d").format("YYY-MM-DD") + " 12:00:00"; 
     } else {
-        firstForecast = moment(dtCitySearched, "M/DD/YY, h:mm a").format("YYY-MM-DD") + " 12:00:00"
+        firstForecast = moment(dtCitySearched, "M/DD/YY, h:mm a").format("YYY-MM-DD") + " 12:00:00";
+    }
+
+    let arrDays = data.list; 
+    console.log(arrDays);
+    let startIndex; 
+
+    arrDays.forEach(function(day) {
+        if(day.dt_text === firstForecast) {
+            startIndex = arrDays.indexOf(day)
+            return; 
+        }
+    })
+
+    for(i = startIndex; i < arrDays.length; i+= 8) {
+
     }
 }
 
-
+*/
 function getUVindex(lat, lon) {
     console.log(lat); 
     let uvAPI = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}`;
@@ -158,15 +175,20 @@ function displayUVIndex(index) {
 }
 
 function searchHistory() {
-    citiesListEl.value = ""; 
+    citiesListEl.text = ""; 
 
-    cities.forEach(function(city) {
-        console.log(city)
-        citiesListEl.append(`<li class="list-group-item"> ${city} </li>`);
-    })
+    if(cities.includes(cityName)) {
+        cities.forEach(function(city) {
+            console.log(city)
+            citiesListEl.append(`<li class="list-group-item"> ${city} </li>`);
+        })
+    }
+
+    
 }
 
 function clearSearchHistory() {
+    console.log("run"); 
     localStorage.clear();  
 }
 
