@@ -207,15 +207,16 @@ function displayUVIndex(index) {
 }
 
 function searchHistory() {
-    citiesListEl.text = ""; 
+    citiesListEl.value = ""; 
 
     cities.forEach(function(city) {
-        citiesListEl.append(`<li class="list-group-item"> ${city} </li>`);
+        citiesListEl.append(`<li class="list-group-item city"> ${city} </li>`);
     })
 }
 
 function clearSearchHistory() {
-    localStorage.clear();  
+    localStorage.clear(); 
+    citiesListEl.empty();  
 }
 
 userFormEl.submit(formSubmitHandler); 
