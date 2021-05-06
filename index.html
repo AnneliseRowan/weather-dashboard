@@ -16,13 +16,12 @@
 
     <main class="container pt-3">
         <div class="row">
-            <!-- Search column bg-primary btn-outline-secondary-->
             <div class="col-12 col-md-3">
                 <aside class="filters mx-auto">
                     <div class="panel panel-default">
                         <h5 class="panel-heading">Search for a City:</h5>
                         <div class="panel-body">
-                            <form id="user-form">
+                            <form id="weather-form">
                                 <div class="form-group mb-3">
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="city-name">
@@ -33,24 +32,23 @@
                                 </div>
                             </form>
                         </div>
-                        <div id="cities-container">
+                        <div id="saved-cities">
                             <ul class="list-group"></ul>
-                            <button id="clear-btn" type="submit" class="btn bg-default mt-2 text-secondary text-danger">Delete Search History</button>
+                            <button id="delete-btn" type="submit" class="btn bg-default mt-2 text-secondary text-danger">Delete Search History</button>
                         </div>
                     </div>
                 </aside>
             </div>
-            <!-- Results column -->
             <div class="col-12 col-md-9">
                 <div class="row d-block mx-auto">
                     <div class="card">
                         <div class="card-body mt-0">
                             <h3 class="card-title mt-0" id="city-searched"></h3>
-                            <div id="current-weather-container"></div>
+                            <div id="day-weather-container"></div>
                         </div>
                     </div>
                 </div>
-                <div class="row d-block mx-auto" id="forecast-container">
+                <div class="row d-block mx-auto" id="5-day-container">
                 </div>
             </div>
         </div>

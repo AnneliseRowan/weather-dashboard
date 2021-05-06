@@ -1,19 +1,19 @@
-let userFormEl = $("#user-form");
+let weatherFormEl = $("#weather-form");
 let cityInputEl = $("#city-name");
-let citiesListEl = $("#cities-container ul"); 
+let savedCitiesEl = $("#saved-cities ul"); 
 let citySearchedEL = $("#city-searched"); 
-let currentWeatherContainerEl = $("#current-weather-container"); 
-let forecastContainerEl = $("#forecast-container"); 
+let dayWeatherContainerEl = $("#day-weather-container"); 
+let weekContainerEl = $("#5-day-container"); 
 let cities = JSON.parse(localStorage.getItem("citiesSearched")) || []; 
-let clearBtn = $("#clear-btn");
+let deleteBtn = $("#delete-btn");
 
-let citySearched; 
+let dtCitySearch; 
 
 
 const apiKey = "4994e9dae0cfd4d7106550fa9a769e96";
 
 function isEmpty(obj) {
-    for(var key in obj) {
+    for(let key in obj) {
         if(obj.hasOwnProperty(key)) {
             return false; 
         }
@@ -52,9 +52,9 @@ function getCurrentWeather(cityName) {
         },
         error: function() {
             alert("We have a slight issue!");
-            forecastContainerEl.textContent = ""; 
+            weekContainerEl.textContent = ""; 
             if(cities.includes(cityName)) {
-                var index = cities.indexOf(cityName);
+                let index = cities.indexOf(cityName);
                 if(index > -1) {
                     cities.splice(index, 1)
                 }
@@ -67,7 +67,7 @@ function getCurrentWeather(cityName) {
 }
 
 function displayCurrentWeather(data, cityName) {
-    currentWeatherContainerEl.text("");
+    dayWeatherContainerEl.text("");
     citySearchedEL.text(""); 
 
     citySearchedEL.textContent = cityName; 
@@ -80,27 +80,26 @@ function displayCurrentWeather(data, cityName) {
     }
 
     if(isEmpty(data)) {
-        currentWeatherContainerEl.text = "No weather data has been found for this location!";
+        dayWeatherContainerEl.text = "No weather data has been found for this location!";
         return; 
     }
 
-    dtCitySearched = moment.unix(data.dt + data.timezone).utc().format("M/DD/YY, h:mm a");
+    dtCitySearch = moment.unix(data.dt + data.timezone).utc().format("M/DD/YY, h:mm a");
 
-    citySearchedEL.append(`${cityName} ${dtCitySearched} <span id="weather-icon"><img src="http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png"/></span>`)
-    currentWeatherContainerEl.append(`<p> Temperature: ${data.main.temp}℉ </p>`)
-    currentWeatherContainerEl.append(`<p> Humidity: ${data.main.humidity}% </p>`)
-    currentWeatherContainerEl.append(`<p> Wind Speed: ${data.wind.speed} MPH </p>`)
+    citySearchedEL.append(`${cityName} ${dtCitySearch} <span id="weather-icon"><img src="http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png"/></span>`)
+    dayWeatherContainerEl.append(`<p> Temperature: ${data.main.temp}℉ </p>`)
+    dayWeatherContainerEl.append(`<p> Humidity: ${data.main.humidity}% </p>`)
+    dayWeatherContainerEl.append(`<p> Wind Speed: ${data.wind.speed} MPH </p>`)
 }
 
 function get5DayForecast(cityName) {
 
-    var apiURL = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&units=imperial&cnt=40&appid=${apiKey}`;
+    let apiURL = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&units=imperial&cnt=40&appid=${apiKey}`;
 
     $.ajax(apiURL, {
         dataType: "json",
         success: function(data) {
             display5DayForecast(data); 
-            console.log(data); 
         },
         error: function() {
             //alert("Couldn't find the 5 day forecast")
@@ -110,18 +109,18 @@ function get5DayForecast(cityName) {
 }
 
 function display5DayForecast(data) {
-    forecastContainerEl.append(`<h4 class="d-block pt-4 pb-2"> 5-Day Forecast <span id="time-forecast">[expected weather at noon everyday]</span><h4>`); 
+    weekContainerEl.append(`<h4 class="d-block pt-4 pb-2"> 5-Day Forecast <span id="time-forecast">[expected weather at noon everyday]</span><h4>`); 
     let cardsContainerEl = $("<p>");
 
 
     let firstForecast; 
 
-    let todayStartHour = moment(dtCitySearched, "M/DD/YY, h:mm a").startOf("hour").format("YYY-MM-DD HH:mm:ss"); 
-    let todayAt6Am = moment(dtCitySearched, "M/DD/YY, h:mm a").format("YYY-MM-DD") + " 06:00:00"; 
+    let todayStartHour = moment(dtCitySearch, "M/DD/YY, h:mm a").startOf("hour").format("YYY-MM-DD HH:mm:ss"); 
+    let todayAt6Am = moment(dtCitySearch, "M/DD/YY, h:mm a").format("YYY-MM-DD") + " 06:00:00"; 
     if(todayStartHour > todayAt6Am) {
-        firstForecast = moment(dtCitySearched, "M/DD/YY, h:mm a").add(1, "d").format("YYY-MM-DD") + "12:00:00"; 
+        firstForecast = moment(dtCitySearch, "M/DD/YY, h:mm a").add(1, "d").format("YYY-MM-DD") + "12:00:00"; 
     } else {
-        firstForecast = moment(dtCitySearched, "M/DD/YY, h:mm a").format("YYY-MM-DD") + "12:00:00";
+        firstForecast = moment(dtCitySearch, "M/DD/YY, h:mm a").format("YYY-MM-DD") + "12:00:00";
     }
 
     console.log(firstForecast); 
@@ -136,7 +135,7 @@ function display5DayForecast(data) {
         if(day.dt_text === firstForecast) {
             console.log(startIndex)
             return startIndex = arrDays.indexOf(day);
-            
+
         }
          
     })
@@ -167,12 +166,15 @@ function display5DayForecast(data) {
         let humidityEl = $("<p>").addClass("card-text").text(`Humidity: ${arrDays[i].main.humidity}%`);
         cardBodyEl.append(humidityEl); 
 
+        let windSpeedEl = $("<p>").addClass("card-text").text(`Wind Speed: ${arrDays[i].wind.speed} MPH`);
+        cardBodyEl.append(windSpeedEl)
+
         cardEl.append(cardBodyEl); 
         dayForecastContainerEl.append(cardEl); 
         cardsContainerEl.append(dayForecastContainerEl); 
     }
 
-    forecastContainerEl.append(cardsContainerEl);
+    weekContainerEl.append(cardsContainerEl);
 }
 
 
@@ -203,24 +205,24 @@ function displayUVIndex(index) {
         indexClass = "bg-danger"; 
     }
 
-    currentWeatherContainerEl.append(`UV index: <span class=${indexClass}>${index}</span>`); 
+    dayWeatherContainerEl.append(`UV index: <span class=${indexClass}>${index}</span>`); 
 }
 
 function searchHistory() {
-    citiesListEl.value = ""; 
+    savedCitiesEl.value = ""; 
 
     cities.forEach(function(city) {
-        citiesListEl.append(`<li class="list-group-item city"> ${city} </li>`);
+        savedCitiesEl.append(`<li class="list-group-item city"> ${city} </li>`);
     })
 }
 
 function clearSearchHistory() {
     localStorage.clear(); 
-    citiesListEl.empty();  
+    savedCitiesEl.empty();  
 }
 
-userFormEl.submit(formSubmitHandler); 
-citiesListEl.click(cityClickHandler); 
-clearBtn.click(clearSearchHistory); 
+weatherFormEl.submit(formSubmitHandler); 
+savedCitiesEl.click(cityClickHandler); 
+deleteBtn.click(clearSearchHistory); 
 searchHistory();
 
