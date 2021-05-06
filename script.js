@@ -44,7 +44,6 @@ function getCurrentWeather(cityName) {
     $.ajax(requestUrl, {
         dataType: "json",
         success: function(data) {
-            console.log(data);
             displayCurrentWeather(data, cityName);
             get5DayForecast(cityName); 
             getUVindex(data.coord.lat, data.coord.lon)
@@ -76,7 +75,7 @@ function displayCurrentWeather(data, cityName) {
         cities.push(cityName);
         cities.sort();
         localStorage.setItem(`citiesSearched`, JSON.stringify(cities)); 
-        searchHistory(); 
+        searchHistoryTwo(cityName); 
     }
 
     if(isEmpty(data)) {
@@ -102,60 +101,29 @@ function get5DayForecast(cityName) {
             display5DayForecast(data); 
         },
         error: function() {
-            //alert("Couldn't find the 5 day forecast")
+            alert("Couldn't find the 5 day forecast")
         }
     })
 
 }
 
 function display5DayForecast(data) {
-    weekContainerEl.append(`<h4 class="d-block pt-4 pb-2"> 5-Day Forecast <span id="time-forecast">[expected weather at noon everyday]</span><h4>`); 
+    weekContainerEl.empty(); 
+    weekContainerEl.append(`<h4 class="d-block pt-4 pb-2"> 5-Day Forecast <span id="time-forecast">[expected weather at midnight everyday]</span><h4>`); 
     let cardsContainerEl = $("<p>");
 
-
-    let firstForecast; 
-
-    let todayStartHour = moment(dtCitySearch, "M/DD/YY, h:mm a").startOf("hour").format("YYY-MM-DD HH:mm:ss"); 
-    let todayAt6Am = moment(dtCitySearch, "M/DD/YY, h:mm a").format("YYY-MM-DD") + " 06:00:00"; 
-    if(todayStartHour > todayAt6Am) {
-        firstForecast = moment(dtCitySearch, "M/DD/YY, h:mm a").add(1, "d").format("YYY-MM-DD") + "12:00:00"; 
-    } else {
-        firstForecast = moment(dtCitySearch, "M/DD/YY, h:mm a").format("YYY-MM-DD") + "12:00:00";
-    }
-
-    console.log(firstForecast); 
-
     let arrDays = data.list; 
-    console.log(arrDays);
-    let startIndex; 
 
-    
-    
-    arrDays.forEach(function(day) {
-        if(day.dt_text === firstForecast) {
-            console.log(startIndex)
-            return startIndex = arrDays.indexOf(day);
-
-        }
-         
-    })
-    
-    console.log(startIndex); 
-
-    for(i = 6; i < arrDays.length; i+= 8) {
+    for(i = 4; i < arrDays.length; i+= 8) {
         let dayForecastContainerEl = $("<div>").addClass("mx-auto");
         let cardEl = $("<div>").addClass("card bg-primary text-white"); 
         let cardBodyEl = $("<div>").addClass("card-body"); 
 
-        //let date = moment(arrDays[i].dt_text.split(" ")[0], "YYYY-MM-DD").format("M/DD/YY"); 
-        //console.log(date); 
-        //let dateEl = $("<h5>").addClass("card-title").text(`${date}`); 
-        //cardBodyEl.append(dateEl);
+        let date = moment(arrDays[i].dt_txt, "YYYY-MM-DD").format("M/DD/YY"); 
+        let dateEl = $("<h5>").addClass("card-title").text(`${date}`); 
+        cardBodyEl.append(dateEl);
         
         let iconId = arrDays[i].weather[0].icon; 
-        if(iconId[iconId.length - 1] === "n") {
-            iconId = iconId.slice(0, 1) + "d"; 
-        }
        
         let iconEl = $("<i>").html(`<img src="https://openweathermap.org/img/wn/${iconId}.png"/>`); 
         cardBodyEl.append(iconEl); 
@@ -209,11 +177,17 @@ function displayUVIndex(index) {
 }
 
 function searchHistory() {
-    savedCitiesEl.value = ""; 
+    savedCitiesEl.textContent = ""; 
 
     cities.forEach(function(city) {
         savedCitiesEl.append(`<li class="list-group-item city"> ${city} </li>`);
     })
+}
+
+function searchHistoryTwo(city) {
+    savedCitiesEl.textContent = ""; 
+
+    savedCitiesEl.append(`<li class="list-group-item city"> ${city} </li>`);
 }
 
 function clearSearchHistory() {
