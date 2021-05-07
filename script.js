@@ -75,7 +75,7 @@ function displayCurrentWeather(data, cityName) {
         cities.push(cityName);
         cities.sort();
         localStorage.setItem(`citiesSearched`, JSON.stringify(cities)); 
-        searchHistoryTwo(cityName); 
+        searchHistoryFix(cityName); 
     }
 
     if(isEmpty(data)) {
@@ -124,7 +124,7 @@ function display5DayForecast(data) {
         cardBodyEl.append(dateEl);
         
         let iconId = arrDays[i].weather[0].icon; 
-        if (iconId[iconId.length-1] === 'n') {          // if it's a night icon, then
+        if (iconId[iconId.length-1] === 'n') {        
             iconId = iconId.slice(0, -1) + 'd'; 
         }
        
@@ -187,7 +187,7 @@ function searchHistory() {
     })
 }
 
-function searchHistoryTwo(city) {
+function searchHistoryFix(city) {
     savedCitiesEl.textContent = ""; 
 
     savedCitiesEl.append(`<li class="list-group-item city"> ${city} </li>`);
