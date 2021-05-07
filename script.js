@@ -27,7 +27,7 @@ function formSubmitHandler(event) {
     
     if(city) {
         getCurrentWeather(city); 
-        cityInputEl.textContent = " "; 
+        cityInputEl.text = ""; 
     } else {
         alert("Please Enter a City")
     }
@@ -51,7 +51,7 @@ function getCurrentWeather(cityName) {
         },
         error: function() {
             alert("We have a slight issue!");
-            weekContainerEl.textContent = ""; 
+            weekContainerEl.text = ""; 
             if(cities.includes(cityName)) {
                 let index = cities.indexOf(cityName);
                 if(index > -1) {
@@ -66,14 +66,13 @@ function getCurrentWeather(cityName) {
 }
 
 function displayCurrentWeather(data, cityName) {
-    dayWeatherContainerEl.text("");
-    citySearchedEL.text(""); 
+    dayWeatherContainerEl.empty();
+    citySearchedEL.empty(); 
 
-    citySearchedEL.textContent = cityName; 
+    citySearchedEL.text = cityName; 
 
-    if(!cities.includes(cityName)) {
+    if(!cities.includes(cityName.trim())) {
         cities.push(cityName);
-        cities.sort();
         localStorage.setItem(`citiesSearched`, JSON.stringify(cities)); 
         searchHistoryFix(cityName); 
     }
@@ -180,7 +179,7 @@ function displayUVIndex(index) {
 }
 
 function searchHistory() {
-    savedCitiesEl.textContent = ""; 
+    savedCitiesEl.text = ""; 
 
     cities.forEach(function(city) {
         savedCitiesEl.append(`<li class="list-group-item city"> ${city} </li>`);
@@ -188,7 +187,7 @@ function searchHistory() {
 }
 
 function searchHistoryFix(city) {
-    savedCitiesEl.textContent = ""; 
+    savedCitiesEl.text = ""; 
 
     savedCitiesEl.append(`<li class="list-group-item city"> ${city} </li>`);
 }
