@@ -124,6 +124,9 @@ function display5DayForecast(data) {
         cardBodyEl.append(dateEl);
         
         let iconId = arrDays[i].weather[0].icon; 
+        if (iconId[iconId.length-1] === 'n') {          // if it's a night icon, then
+            iconId = iconId.slice(0, -1) + 'd'; 
+        }
        
         let iconEl = $("<i>").html(`<img src="https://openweathermap.org/img/wn/${iconId}.png"/>`); 
         cardBodyEl.append(iconEl); 
